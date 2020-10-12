@@ -3,4 +3,4 @@ project(deflate C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(deflate main.c)
+add_executable(deflate main.c lib/filemanager.h)
