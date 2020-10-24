@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "./lib/filemanager.h"
+#include "lib/file_manager/filemanager.h"
 
 int main(int argc, char** argv) {
     char * file;
