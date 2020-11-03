@@ -5,11 +5,11 @@
 
 /**
  * TODO:
- * - Restituire dato strutturato
- * - Migliorare/aggiungere commenti
- * - Migliorare log errore
+ *  1. Migliorare/aggiungere commenti
+ *  2. Migliorare log errore
  */
-char * readFile(char *filename) {
+Data readFile(char *filename) {
+    Data data;
     FILE * file;
     long size;
     char * buffer;
@@ -40,28 +40,28 @@ char * readFile(char *filename) {
     }
 
     fclose(file);
-    return buffer;
+    
+    data.ptr = buffer;
+    data.size = size;
+    return data;
 }
 
 /**
  *
  * TODO
- *  1. Salvare i dati a blocchi e non tutto assieme?
- *  2. Rivedere come rilevare la dimensione del dati => fwrite
- *     Utilizzare il dato strutturato
- *  3. Problemi di encoding (es.: new line)
+ *  Salvare i dati a blocchi e non tutto assieme?
  *
  * @param {Pointer} data
  * @param {String} filename
  * @return {number} - 0 = no errors
  */
-int saveFile(char *data, char *filename) {
+int saveFile(Data data, char *filename) {
     FILE * file;
     file = fopen(filename, "w");
 
     if (!file) perror("Error: On opening file");
 
-    fwrite(data, sizeof(char), strlen(data), file);
+    fwrite(data.ptr, sizeof(char), data.size, file);
     fclose(file);
     return 0;
 }

@@ -1,7 +1,9 @@
 #ifndef __FIlE_MANAGER__
 #define __FILE_MANAGER__
 
-char * readFile(char *filename);
-int saveFile(char *data, char *filename);
+#include "../utils/utils.h";
+
+Data readFile(char *filename);
+int saveFile(Data data, char *filename);
 
 #endif
