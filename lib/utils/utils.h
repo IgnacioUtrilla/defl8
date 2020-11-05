@@ -2,8 +2,8 @@
 #define __UTILS__
 
 typedef struct data {
-    char *ptr;
-    long size;
+  char *ptr;
+  long size;
 } Data;
 
 #endif

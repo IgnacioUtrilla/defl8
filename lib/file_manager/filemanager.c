@@ -9,41 +9,41 @@
  *  2. Migliorare log errore
  */
 Data readFile(char *filename) {
-    Data data;
-    FILE * file;
-    long size;
-    char * buffer;
-    size_t result;
+  Data data;
+  FILE *file;
+  long size;
+  char *buffer;
+  size_t result;
 
-    file = fopen(filename,"rb");
-    if (file==NULL) {
-        perror("Error: File not found");
-        exit(1);
-    }
+  file = fopen(filename, "rb");
+  if (file == NULL) {
+    perror("Error: File not found");
+    exit(1);
+  }
 
-    fseek(file , 0 , SEEK_END);
-    size = ftell(file);
-    rewind(file);
+  fseek(file, 0, SEEK_END);
+  size = ftell(file);
+  rewind(file);
 
-    //Preparo buffer per salvare file
-    buffer = (char*) malloc (sizeof(char)*size);
-    if (buffer == NULL) {
-        perror("Error: On memory allocation");
-        exit(2);
-    }
+  //Preparo buffer per salvare file
+  buffer = (char *) malloc(sizeof(char) * size);
+  if (buffer == NULL) {
+    perror("Error: On memory allocation");
+    exit(2);
+  }
 
-    //Leggo file e lo salvo in buffer
-    result = fread(buffer,sizeof(char),size,file);
-    if (result != size) {
-        perror("Error: On reading file");
-        exit(3);
-    }
+  //Leggo file e lo salvo in buffer
+  result = fread(buffer, sizeof(char), size, file);
+  if (result != size) {
+    perror("Error: On reading file");
+    exit(3);
+  }
 
-    fclose(file);
-    
-    data.ptr = buffer;
-    data.size = size;
-    return data;
+  fclose(file);
+
+  data.ptr = buffer;
+  data.size = size;
+  return data;
 }
 
 /**
@@ -56,12 +56,12 @@ Data readFile(char *filename) {
  * @return {number} - 0 = no errors
  */
 int saveFile(Data data, char *filename) {
-    FILE * file;
-    file = fopen(filename, "w");
+  FILE *file;
+  file = fopen(filename, "w");
 
-    if (!file) perror("Error: On opening file");
+  if (!file) perror("Error: On opening file");
 
-    fwrite(data.ptr, sizeof(char), data.size, file);
-    fclose(file);
-    return 0;
+  fwrite(data.ptr, sizeof(char), data.size, file);
+  fclose(file);
+  return 0;
 }
