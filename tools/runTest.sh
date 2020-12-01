@@ -31,7 +31,7 @@ trap "rm -f $tempFilename" INT
 
 function compileAndRunTest() {
   printf "\033c"
-  gcc -o "./$tempFilename" "./$DIR_TEST" -lcriterion
+  gcc -o "./$tempFilename" "./$DIR_TEST" -lcriterion -lm
   ./"$tempFilename"
 }
 
