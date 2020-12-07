@@ -6,10 +6,6 @@
 /**
  * hmNode struct definition
  */
-typedef struct hmnode {
-  void *value;
-  char *key;
-} hmNode;
 
 /**
  *

@@ -4,6 +4,11 @@
 #define MAX_HASHMAP_SIZE 256
 #define MAX_HASHMAP_SIZE_X2 512
 
+typedef struct hmnode {
+  void *value;
+  char *key;
+} hmNode;
+
 typedef struct hashmap {
   int size;
   struct hmnode *array[MAX_HASHMAP_SIZE_X2]; // Load Factor = 0.5, numero massimo di elementi = MAX_HASHMAP_SIZE
