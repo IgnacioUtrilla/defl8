@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "lz78.c"
+#include "./utils/utils.c"
 #include "../../utils/bit_stream/bitStream.c"
 #include "../../utils/bit_stream/bitOps.c"
 #include "../../utils/map/map.c"
