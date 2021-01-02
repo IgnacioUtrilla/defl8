@@ -14,5 +14,6 @@ typedef enum { DYNAMIC_HUFFMAN, STATIC_HUFFMAN } huffman_type;
 void writeCode(char *header, Map *data);
 unsigned int evaluate(Map *code, huffman_type type);
 void writeStringOfBitsIntoFile(char *data);
+void writeBlock(Data *data);
 
 #endif
