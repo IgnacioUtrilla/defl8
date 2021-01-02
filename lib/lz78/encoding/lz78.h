@@ -1,8 +1,9 @@
 #ifndef __LZ78_ENCODING__
 #define __LZ78_ENCODING__
 
-typedef struct data Data;
+#include "../../huffman/huffman.h"
 
-Data lz78(Data data);
+// TODO rivedere nome
+Map *encoding(Data *data, HashMap *huffmanTable);
 
 #endif
