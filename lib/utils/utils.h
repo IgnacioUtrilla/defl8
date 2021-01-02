@@ -4,7 +4,7 @@
 // Struttura dati
 typedef struct data {
   char *ptr;
-  long size;
+  unsigned long size;
 } Data;
 
 // Struttura albero Huffman

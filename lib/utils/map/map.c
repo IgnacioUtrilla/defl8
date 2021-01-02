@@ -127,3 +127,5 @@ Map *createMap() {
 
   return map;
 }
+
+// TODO: create destructor
