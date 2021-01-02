@@ -7,15 +7,15 @@ const unsigned int MAX_BLOCK_SIZE = 65536; // 64 KiB
 
 typedef enum { DYNAMIC_HUFFMAN, STATIC_HUFFMAN } huffman_type;
 
-/* TODO
- *  1. gestire file piccoli
- *  3. Rivedere nomenclatura variabili e funzioni
- */
-
 /*
  * TODO
- *  1. Eseguire in contemporanea SH e DH (ottimizzazione)
- *  2. Programmazione dinamica (memoize)?
+ *  1. Valutare se c'è un blocco successivo oppure no (header block)
+ *  2. Eseguire in contemporanea SH e DH (ottimizzazione)
+ *  3. Programmazione dinamica (memoize)?
+ *
+ * TODO
+ *  1. gestire file piccoli
+ *  3. Rivedere nomenclatura variabili e funzioni
  */
 
 Map *encoding(Data *data, HashMap *huffmanTable) {
@@ -92,10 +92,9 @@ int writeStringOfBitsIntoFile(char *data) {
 }
 
 char *int2bin(unsigned int number, int number_of_bits, char *dest) {
-  unsigned int temp = number;
   char *inverseBinaryNumber = (char *) malloc(number_of_bits + 1);
   for (unsigned int i = 0; i < number_of_bits; i++) {
-    temp = temp >> i;
+    unsigned int temp = number >> i;
     strcat(inverseBinaryNumber, (temp & 1) ? "1" : "0");
   }
 
