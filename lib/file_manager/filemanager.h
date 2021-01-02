@@ -4,6 +4,6 @@
 #include "../utils/utils.h"
 
 Data readFile(char *filename);
-int saveFile(Data data, char *filename);
+int saveFile(Data *data, char *filename);
 
 #endif
