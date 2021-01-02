@@ -33,7 +33,7 @@ static int hash(char *key) {
     interactions--;
   }
 
-  return (int) (result % m);
+  return (int) (llabs(result) % m);
 };
 
 /**
@@ -48,7 +48,10 @@ void *getHashMapValue(HashMap *hashmap, char *key) {
   int index = hash(key);
   do {
     hmNode *node = hashmap->array[index];
-    if (node != NULL && !strcmp(node->key, key))
+
+    if (node == NULL) return 0;
+
+    if (!strcmp(node->key, key))
       return node->value;
 
     index++;
