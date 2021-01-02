@@ -1,16 +1,16 @@
 #include "lz78.h"
 
-const unsigned int MAX_BLOCK_SIZE = 65536; // 64 KiB
+const unsigned int MAX_BLOCK_SIZE = 3;//65536; // 64 KiB
 
 /*
- * TODO
- *  1. Valutare se c'è un blocco successivo oppure no (header block)
- *  2. Eseguire in contemporanea SH e DH (ottimizzazione)
- *  3. Programmazione dinamica (memoize)?
+ * TODO (extra)
+ *  1. Eseguire in contemporanea SH e DH (ottimizzazione)
+ *  2. Programmazione dinamica (memoize)?
  *
  * TODO
- *  1. gestire file piccoli
+ *  2. fix: (gestire file piccolo)
  *  3. Rivedere nomenclatura variabili e funzioni
+ *
  */
 
 /**
@@ -30,6 +30,10 @@ int main() {
 
   while (readBlock(MAX_BLOCK_SIZE, data->ptr) == ST_OK) {
     data->size = strlen(data->ptr);
+
+    if (!strcmp(data->ptr, ""))
+      continue;
+
     HashMap *dynamicHuffmanTable = getHuffmanTable(data);
 
     Map *staticCode = encoding(data, staticHuffmanTable);
@@ -39,22 +43,29 @@ int main() {
     unsigned int dynamicCodeSize = evaluate(dynamicCode, DYNAMIC_HUFFMAN);
     unsigned long dataDimensionNonCompressed = data->size * 8;
 
+    char *header = (char *) malloc(sizeof(char) * 4); // 3 bits + \0
+    strcpy(header, isLastBlock() ? "1" : "0");
+
     if (staticCodeSize < dynamicCodeSize && staticCodeSize < dataDimensionNonCompressed) {
       // save static code, header 001
-      writeCode("001", staticCode);
+      strcat(header, "01");
+      writeCode(header, staticCode);
     } else if (dynamicCodeSize < staticCodeSize && dynamicCodeSize < dataDimensionNonCompressed) {
       // save dynamic code, header 010
-      writeCode("010", staticCode);
+      strcat(header, "10");
+      writeCode(header, staticCode);
     } else {
       // save non compressed block, header 000
-      writeStringOfBitsIntoFile("000");
-      saveFile(data, output);
+      strcat(header, "00");
+      writeStringOfBitsIntoFile(header);
+      writeBlock(data);
 
       // end-of-non-compressed-block code
       writeStringOfBitsIntoFile("00000000");
     }
 
-    // FIXME: crasha con blocchi piccoli (prova a mettere dimensione del blocco = 3)
+    free(header);
+    // FIXME: createHuffmanTree si spacca con una freqMap con un solo elemento
   }
 
   closeStream(READ);
