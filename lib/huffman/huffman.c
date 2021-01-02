@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
 #include "huffman.h"
 
 int findCharInArrayOfChars(Node *node, char c) {
