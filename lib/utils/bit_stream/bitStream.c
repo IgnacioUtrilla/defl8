@@ -101,6 +101,32 @@ void writeBlock(Data *data) {
   free(str);
 }
 
+/**
+ * Write the binary string into the output file
+ *
+ * @param {Char pointer} data - binary string
+ */
+void writeStringOfBitsIntoFile(char *data) {
+  for (unsigned int i = 0; i < strlen(data); i++) {
+    uc bit = data[i] - '0';
+    writeBit(bit);
+  }
+}
+
+/**
+ * Write a block of data
+ *
+ * @param {Data pointer} data
+ */
+void writeBlock(Data *data) {
+  for (unsigned int i = 0; i < data->size; i++) {
+    for (unsigned int j = 0; j < 8; j++) {
+      uc bit = ((data->ptr[i] >> j) & 1 ? '1' : '0');
+      writeBit(bit);
+    }
+  }
+}
+
 // close a bit stream
 stream_status closeStream(stream_mode mode) {
   if (mode == READ) {

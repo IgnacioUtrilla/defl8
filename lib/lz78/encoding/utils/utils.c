@@ -72,27 +72,6 @@ unsigned int evaluate(Map *code, huffman_type type) {
 }
 
 /**
- * Write the binary string into the output file
- *
- * @param {Char pointer} data - binary string
- */
-void writeStringOfBitsIntoFile(char *data) {
-  for (unsigned int i = 0; i < strlen(data); i++) {
-    uc bit = data[i] - '0';
-    writeBit(bit);
-  }
-}
-
-void writeBlock(Data *data) {
-  for (unsigned int i = 0; i < data->size; i++) {
-    for (unsigned int j = 0; j < 8; j++) {
-      uc bit = ((data->ptr[i] >> j) & 1 ? '1' : '0');
-      writeBit(bit);
-    }
-  }
-}
-
-/**
  * Function to convert an int to a binary string of n bits
  *
  * @param {Integer} number - number to convert

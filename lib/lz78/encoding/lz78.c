@@ -1,6 +1,6 @@
 #include "lz78.h"
 
-const unsigned int MAX_BLOCK_SIZE = 3;//65536; // 64 KiB
+const unsigned int MAX_BLOCK_SIZE = 65536; // 64 KiB
 
 /*
  * TODO (extra)
@@ -8,14 +8,17 @@ const unsigned int MAX_BLOCK_SIZE = 3;//65536; // 64 KiB
  *  2. Programmazione dinamica (memoize)?
  *
  * TODO
- *  2. fix: (gestire file piccolo)
- *  3. Rivedere nomenclatura variabili e funzioni
+ *  1. fix: (gestire file piccolo)
+ *  2. Rivedere nomenclatura variabili e funzioni
+ *  3. Rinominare il main e aggiungere i suoi parametri
  *
  */
 
 /**
- * TODO
- * @return
+ * Compressor function
+ *
+ * @param {Char pointer} fin - input file directory
+ * @param {Char pointer} fout - output file directory
  */
 int main() {
   char *input = "../lib/lz78/encoding/test_files/test1/input.txt";
