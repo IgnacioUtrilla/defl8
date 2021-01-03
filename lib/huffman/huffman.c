@@ -63,6 +63,10 @@ char *getStrEncode(Node *root, char *c) {
 Node *createHuffmanTree(Map *freqMap) {
   Map *nodeMap = createMap();
   Element firstMin = findDeleteMin(freqMap);
+  if (freqMap->size == 0) {
+    Node *only = createNode(firstMin.key, *(float *) firstMin.value);
+    return only;
+  }
   Element secondMin = findDeleteMin(freqMap);
 
   Node *firstNode = createNode(firstMin.key, *(float *) firstMin.value);

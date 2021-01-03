@@ -75,4 +75,5 @@ HashMap *getHuffmanStaticTable() {
       staticTable->insert(staticTable, key, encodedStr);
     }
   }
+  return staticTable;
 }

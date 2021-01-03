@@ -100,7 +100,7 @@ Element findMin(Map *map, Element (*getValue)(void *)) {
     Element min;
 
     static char *minChar;
-    float minValue = 1.0f;
+    float minValue = 1.01f;
 
     min.value = &minValue;
     for (int i = 0; i < map->size; i++) {
