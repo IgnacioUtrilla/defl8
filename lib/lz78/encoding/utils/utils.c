@@ -34,9 +34,8 @@ Map *encoding(Data *data, HashMap *huffmanTable) {
 
   // TODO: duplicated code
   if (P != NULL) {
-    void *encodedChar = huffmanTable->get(huffmanTable, P);
     int pIndex = *(int *) dictionary->get(dictionary, P);
-    code->insert(code, !pIndex ? pIndex : 0, encodedChar);
+    code->insert(code, pIndex, NULL);
   }
 
   return code;
@@ -48,9 +47,10 @@ Map *encoding(Data *data, HashMap *huffmanTable) {
  * @param {Map pointer} code - element [index, encoded string]
  * @return number of bits
  */
-unsigned int evaluate(Map *code, huffman_type type) {
+Evaluate *evaluate(Map *code, huffman_type type) {
+  Evaluate *eval = (Evaluate *) malloc(sizeof(Evaluate));
   Element *element = code->element;
-  unsigned int numOfBits = 5; // Initial 3 bits = header + 2 bits of end-of-compressed-block
+  unsigned int numOfBits = 5; // Initial 3 bits = header + 2 bits of end-of-compressed-block (11)
   unsigned int maxIndexSize = 0;
 
   do {
@@ -61,14 +61,16 @@ unsigned int evaluate(Map *code, huffman_type type) {
     maxIndexSize = maxIndexSize < indexSize ? indexSize : maxIndexSize;
 
     numOfBits += indexSize;
-    numOfBits += strlen(encodedString);
+    numOfBits += encodedString ? strlen(encodedString) : 8; // 8 == possibile ultimo risultato di lz78 (NULL)
   } while ((element = element->next) != NULL);
 
   if (type == DYNAMIC_HUFFMAN) {
     numOfBits += 8 + maxIndexSize * 256; // length size byte + 256 chars * max length
   }
 
-  return numOfBits;
+  eval->numOfBits = numOfBits;
+  eval->maxIndexSize = maxIndexSize;
+  return eval;
 }
 
 /**
@@ -134,9 +136,15 @@ void writeCode(char *header, Map *data) {
     char *encoded = code->value;
 
     writeStringOfBitsIntoFile(encodedIndex);
-    writeStringOfBitsIntoFile(encoded);
-    free(encodedIndex);
 
+    if (encoded) {
+      writeStringOfBitsIntoFile(encoded);
+    } else {
+      // Si entra in questa situazione quando non si ha un prossimo carattere
+      writeStringOfBitsIntoFile("00000000");
+    }
+
+    free(encodedIndex);
     code = code->next;
   }
 

@@ -22,7 +22,7 @@ const unsigned int MAX_BLOCK_SIZE = 65536; // 64 KiB
  */
 int main() {
   char *input = "../lib/lz78/encoding/test_files/test1/input.txt";
-  char *output = "../lib/lz78/encoding/test_files/test1/output.def8";
+  char *output = "../lib/lz78/encoding/test_files/test1/output.txt";
   HashMap *staticHuffmanTable = getHuffmanStaticTable();
 
   openStream(input, READ);
@@ -34,20 +34,20 @@ int main() {
   while (readBlock(MAX_BLOCK_SIZE, data->ptr) == ST_OK) {
     data->size = strlen(data->ptr);
 
-    if (!strcmp(data->ptr, ""))
-      continue;
-
     HashMap *dynamicHuffmanTable = getHuffmanTable(data);
 
     Map *staticCode = encoding(data, staticHuffmanTable);
     Map *dynamicCode = encoding(data, dynamicHuffmanTable);
 
-    unsigned int staticCodeSize = evaluate(staticCode, STATIC_HUFFMAN);
-    unsigned int dynamicCodeSize = evaluate(dynamicCode, DYNAMIC_HUFFMAN);
+    Evaluate *evaluatedStaticCode = evaluate(staticCode, STATIC_HUFFMAN);
+    Evaluate *evaluatedDynamicCode = evaluate(dynamicCode, DYNAMIC_HUFFMAN);
+
+    unsigned int staticCodeSize = evaluatedStaticCode->numOfBits;
+    unsigned int dynamicCodeSize = evaluatedDynamicCode->numOfBits;
     unsigned long dataDimensionNonCompressed = data->size * 8;
 
     char *header = (char *) malloc(sizeof(char) * 4); // 3 bits + \0
-    strcpy(header, isLastBlock() ? "1" : "0");
+    strcpy(header, isEOF() ? "1" : "0");
 
     if (staticCodeSize < dynamicCodeSize && staticCodeSize < dataDimensionNonCompressed) {
       // save static code, header 001
@@ -67,8 +67,9 @@ int main() {
       writeStringOfBitsIntoFile("00000000");
     }
 
+    free(evaluatedStaticCode);
+    free(evaluatedDynamicCode);
     free(header);
-    // FIXME: createHuffmanTree si spacca con una freqMap con un solo elemento
   }
 
   closeStream(READ);

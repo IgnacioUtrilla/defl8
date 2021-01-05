@@ -7,12 +7,16 @@
 #include "../../../utils/map/map.h"
 #include "../../../utils/hash_map/hashMap.h"
 #include "../../../utils/bit_stream/bitStream.h"
-#include "../../../file_manager/filemanager.h"
+
+typedef struct evaluate {
+  unsigned int numOfBits;
+  unsigned int maxIndexSize;
+} Evaluate;
 
 typedef enum { DYNAMIC_HUFFMAN, STATIC_HUFFMAN } huffman_type;
 
 void writeCode(char *header, Map *data);
-unsigned int evaluate(Map *code, huffman_type type);
+Evaluate *evaluate(Map *code, huffman_type type);
 void writeStringOfBitsIntoFile(char *data);
 void writeBlock(Data *data);
 

@@ -5,7 +5,6 @@
 
 #include "utils/utils.h"
 #include "../../utils/bit_stream/bitStream.h"
-#include "../../file_manager/filemanager.h"
 #include "../../huffman/huffman.h"
 
 // TODO rivedere nome

@@ -23,6 +23,6 @@ stream_status readBlock(size_t size, Data *data);
 
 int isEOF();
 
-int isLastBlock();
+int isEOF();
 
 #endif
