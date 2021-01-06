@@ -18,5 +18,7 @@ typedef struct node {
 
 Node *createNode(void *value, float weight);
 char *concat(const char *str1, const char *str2);
+void int2bin(unsigned int number, int number_of_bits, char *dest);
+int bin2int(char *str);
 
 #endif

@@ -17,3 +17,29 @@ char *concat(const char *str1, const char *str2) {
   strcat(result, str2);
   return result;
 }
+
+/**
+ * Function to convert an int to a binary string of n bits
+ *
+ * @param {Integer} number - number to convert
+ * @param {Integer} number_of_bits
+ * @param {Char pointer (string)} dest - where to save
+ */
+void int2bin(unsigned int number, int number_of_bits, char *dest) {
+  char *inverseBinaryNumber = (char *) malloc(number_of_bits + 1);
+  for (unsigned int i = 0; i < number_of_bits; i++) {
+    unsigned int temp = number >> i;
+    strcat(inverseBinaryNumber, (temp & 1) ? "1" : "0");
+  }
+
+  for (int i = number_of_bits - 1; i >= 0; i--) {
+    char str[2] = {inverseBinaryNumber[i], '\0'};
+    strcat(dest, str);
+  }
+
+  free(inverseBinaryNumber);
+}
+
+int bin2int(char *str) {
+  return (int) strtol(str, NULL, 2);
+}

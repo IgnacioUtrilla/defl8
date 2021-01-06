@@ -108,6 +108,89 @@ Node *createHuffmanTree(Map *freqMap) {
   return ret;
 }
 
-HashMap *createHuffmanTable(Node *treeRoot) {
+/**
+ * ONLY FOR CANONICAL HUFFMAN
+ */
+int sortByCodeWordLength(const void *a, const void *b) {
+  CanonicalValue *ca = (CanonicalValue *) a;
+  CanonicalValue *cb = (CanonicalValue *) b;
 
+  return ca->length - cb->length;
+}
+
+/**
+ * ONLY FOR CANONICAL HUFFMAN
+ * Sort only if the two values have the same codeword length
+ */
+int sortByAlphabeticalValue(const void *a, const void *b) {
+  CanonicalValue *ca = (CanonicalValue *) a;
+  CanonicalValue *cb = (CanonicalValue *) b;
+
+  if (ca->length != cb->length)
+    return 0;
+
+  return ca->character - cb->character;
+}
+
+HashMap *createCanonicalHuffmanTable(int size, CanonicalValue *initCanonicalArray) {
+  HashMap *table = createHashMap();
+
+  // sort by codeword length
+  qsort(initCanonicalArray, size, sizeof(CanonicalValue), sortByCodeWordLength);
+
+  // sort by alphabetical value
+  qsort(initCanonicalArray, size, sizeof(CanonicalValue), sortByAlphabeticalValue);
+
+  for (int i = 0; i < size; i++) {
+    if (!initCanonicalArray[i].character)
+      continue;
+
+    char *currentKey = (char *) malloc(sizeof(char) * 2);
+    char keyValue[2] = {(char) initCanonicalArray[i].character, '\0'};
+    strcpy(currentKey, keyValue);
+
+    int currentLength = initCanonicalArray[i].length;
+    char *encodedStr = (char *) malloc(sizeof(char) * (currentLength + 1));
+
+    if (!i) {
+      int2bin(0, currentLength, encodedStr);
+      table->insert(table, currentKey, encodedStr);
+      continue;
+    }
+
+    int previousLength = initCanonicalArray[i - 1].length;
+    char previusKey[2] = {(char) initCanonicalArray[i - 1].character, '\0'};
+    char *previousEncodedStr = (char *) table->get(table, previusKey);
+
+    int newEncodedStr = bin2int(previousEncodedStr);
+    newEncodedStr = newEncodedStr + 0x1;
+    newEncodedStr = currentLength > previousLength ? newEncodedStr << (currentLength - previousLength) : newEncodedStr;
+    int2bin(newEncodedStr, currentLength, encodedStr);
+
+    table->insert(table, currentKey, encodedStr);
+  }
+
+  return table;
+}
+
+HashMap *getHuffmanTable(Data *data) {
+  Map *freqMap = createFreqMap(*data); // TODO: passare un puntatore a data
+  Node *tree = createHuffmanTree(freqMap);
+  char *rootKey = tree->value; // first value (root)
+
+  int numberOfCharacters = (int) strlen(rootKey);
+  CanonicalValue initCanonicalArray[numberOfCharacters];
+
+  for (int i = 0; i < numberOfCharacters; i++) {
+    char key[2] = {rootKey[i], '\0'};
+    char *encodedStr = getStrEncode(tree, key);
+
+    CanonicalValue *canonicalValue = (CanonicalValue *) malloc(sizeof(CanonicalValue));
+    canonicalValue->character = (int) rootKey[i];
+    canonicalValue->length = (int) strlen(encodedStr);
+
+    initCanonicalArray[i] = *canonicalValue;
+  }
+
+  return createCanonicalHuffmanTable(numberOfCharacters, initCanonicalArray);
 }
