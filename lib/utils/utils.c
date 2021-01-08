@@ -1,3 +1,4 @@
+#include <ntsid.h>
 #include "utils.h"
 #include <stdlib.h>
 #include <string.h>
@@ -12,10 +13,20 @@ Node *createNode(void *value, float weight, int length) {
   return node;
 }
 
-char *concat(const char *str1, const char *str2) {
+char *concat(char *str1, char *str2) {
   char *result = (char *) malloc(strlen(str1) + strlen(str2) + 1); // +1 for \0
   strcpy(result, str1);
   strcat(result, str2);
+  return result;
+}
+
+char *concatCharArrays(char *str1, char *str2, int str1Lenght, int str2Length) {
+  int size = str1Lenght + str2Length;
+  char *result = (char *) malloc(size);
+
+  for (int i = 0; i < size; ++i)
+    result[i] = i < str1Lenght ? str1[i] : str2[i - str1Lenght];
+
   return result;
 }
 
