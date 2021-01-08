@@ -18,4 +18,8 @@ stream_status readBit(uc *bit);
 // write one bit to stream
 stream_status writeBit(uc bit);
 
+stream_status readBlock(size_t size, Data *data);
+
+int isEOF();
+
 #endif

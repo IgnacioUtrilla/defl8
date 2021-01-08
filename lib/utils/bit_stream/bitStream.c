@@ -51,6 +51,56 @@ stream_status openStream(char *filename, stream_mode mode) {
   }
 }
 
+/**
+ * ATTENZIONE LA POSIZIONE È BYTE X BYTE NON BIT X BIT
+ */
+int isEOF() {
+  fpos_t pos;
+  fgetpos(fin, &pos);
+
+  fgetc(fin);
+  int isEOF = feof(fin) ? 1 : 0;
+  fsetpos(fin, &pos);
+
+  return isEOF;
+}
+
+stream_status readBlock(size_t size, Data *data) {
+  if (isEOF()) return ST_EOF;
+
+  memset(data->ptr, 0, data->size);
+  data->size = fread(data->ptr, sizeof(char), size, fin);
+
+  return ST_OK;
+}
+
+/**
+ * Write the binary string into the output file
+ *
+ * @param {Char pointer} data - binary string
+ */
+void writeStringOfBitsIntoFile(char *data) {
+  for (unsigned int i = 0; i < strlen(data); i++) {
+    uc bit = data[i] - '0';
+    writeBit(bit);
+  }
+}
+
+/**
+ * Write a block of data
+ *
+ * @param {Data pointer} data
+ */
+void writeBlock(Data *data) {
+  char *str = (char *) malloc(sizeof(char) * 9);
+  for (unsigned int i = 0; i < data->size; i++) {
+    strcpy(str, "");
+    int2bin((unsigned int) data->ptr[i], 8, str);
+    writeStringOfBitsIntoFile(str);
+  }
+  free(str);
+}
+
 // close a bit stream 
 stream_status closeStream(stream_mode mode) {
   if (mode == READ) {
