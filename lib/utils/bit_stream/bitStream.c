@@ -119,12 +119,13 @@ void writeStringOfBitsIntoFile(char *data) {
  * @param {Data pointer} data
  */
 void writeBlock(Data *data) {
+  char *str = (char *) malloc(sizeof(char) * 9);
   for (unsigned int i = 0; i < data->size; i++) {
-    for (unsigned int j = 0; j < 8; j++) {
-      uc bit = ((data->ptr[i] >> j) & 1 ? 1 : 0);
-      writeBit(bit);
-    }
+    strcpy(str, "");
+    int2bin((unsigned int) data->ptr[i], 8, str);
+    writeStringOfBitsIntoFile(str);
   }
+  free(str);
 }
 
 // close a bit stream
