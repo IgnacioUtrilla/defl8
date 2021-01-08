@@ -71,7 +71,7 @@ HashMap *getHuffmanStaticTable() {
       char *key = (char *) malloc(sizeof(char) * 2);
       key = concat(key, temp);
 
-      char *encodedStr = getStrEncode(treeRoot, key);
+      char *encodedStr = getStrEncode(treeRoot, rootKey[i]);
       staticTable->insert(staticTable, key, encodedStr);
     }
   }

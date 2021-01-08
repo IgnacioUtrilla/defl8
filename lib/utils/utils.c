@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-Node *createNode(void *value, float weight) {
+Node *createNode(void *value, float weight, int length) {
   Node *node = (Node *) malloc(sizeof(Node));
   node->right = NULL;
   node->left = NULL;
   node->value = value;
   node->weight = weight;
+  node->length = length;
   return node;
 }
 
@@ -27,6 +28,7 @@ char *concat(const char *str1, const char *str2) {
  */
 void int2bin(unsigned int number, int number_of_bits, char *dest) {
   char *inverseBinaryNumber = (char *) malloc(number_of_bits + 1);
+  memset(inverseBinaryNumber, 0, number_of_bits + 1);
   for (unsigned int i = 0; i < number_of_bits; i++) {
     unsigned int temp = number >> i;
     strcat(inverseBinaryNumber, (temp & 1) ? "1" : "0");

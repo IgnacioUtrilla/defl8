@@ -2,6 +2,14 @@
 #include <string.h>
 #include "huffman.h"
 
+int findCharInArrayOfChars(Node *node, char c) {
+  for (int i = 0; i < node->length; ++i)
+    if (node->value[i] == c)
+      return 1;
+
+  return 0;
+}
+
 Element findDeleteMin(Map *freqMap) {
   Element min = findMin(freqMap, NULL);
   freqMap->delete(freqMap, min.key);
@@ -21,7 +29,7 @@ void checkIfNodeExists(Map *freqMap, Map *nodeMap, Element *min, Node **node) {
   (*min) = findDeleteMin(freqMap);
   (*node) = nodeMap->get(nodeMap, min->key);
   if ((*node) == NULL) {
-    (*node) = createNode(min->key, *(float *) min->value);
+    (*node) = createNode(min->key, *(float *) min->value, 1);
   } else {
     nodeMap->delete(nodeMap, (*node)->value);
   }
@@ -35,24 +43,24 @@ void checkIfNodeExists(Map *freqMap, Map *nodeMap, Element *min, Node **node) {
  * @param {Char pointer} c - the string to encoded
  * @return {Char pointer} encoded string
  */
-char *getStrEncode(Node *root, char *c) {
+char *getStrEncode(Node *root, char c) {
   static Node *currentNode = NULL;
   static char *res = "";
 
   currentNode = root;
 
-  if (currentNode->left && strstr(currentNode->left->value, c) != NULL) {
+  if (currentNode->left && findCharInArrayOfChars(currentNode->left, c)) {
     currentNode = currentNode->left;
     res = concat(res, "0");
   }
 
-  if (currentNode->right && strstr(currentNode->right->value, c) != NULL) {
+  if (currentNode->right && findCharInArrayOfChars(currentNode->right, c)) {
     currentNode = currentNode->right;
     res = concat(res, "1");
   }
 
   if (!currentNode->left && !currentNode->right) {
-    char *final = concat(res, "");
+    char *final = concat(strlen(res) ? res : "0", "");
     res = "";
     return final;
   }
@@ -64,16 +72,16 @@ Node *createHuffmanTree(Map *freqMap) {
   Map *nodeMap = createMap();
   Element firstMin = findDeleteMin(freqMap);
   if (freqMap->size == 0) {
-    Node *only = createNode(firstMin.key, *(float *) firstMin.value);
+    Node *only = createNode(firstMin.key, *(float *) firstMin.value, 0);
     return only;
   }
   Element secondMin = findDeleteMin(freqMap);
 
-  Node *firstNode = createNode(firstMin.key, *(float *) firstMin.value);
-  Node *secondNode = createNode(secondMin.key, *(float *) secondMin.value);
+  Node *firstNode = createNode(firstMin.key, *(float *) firstMin.value, 1);
+  Node *secondNode = createNode(secondMin.key, *(float *) secondMin.value, 1);
 
   Node *newNode =
-      createNode(concat(firstMin.key, secondMin.key), *(float *) firstMin.value + *(float *) secondMin.value);
+      createNode(concat(firstMin.key, secondMin.key), *(float *) firstMin.value + *(float *) secondMin.value, 2);
 
   newNode->left = firstNode;
   newNode->right = secondNode;
@@ -92,7 +100,10 @@ Node *createHuffmanTree(Map *freqMap) {
     Node *secondNode;
     checkIfNodeExists(freqMap, nodeMap, &secondMin, &secondNode);
 
-    newNode = createNode(concat(firstMin.key, secondMin.key), *(float *) firstMin.value + *(float *) secondMin.value);
+    newNode = createNode(concat(firstMin.key, secondMin.key),
+                         *(float *) firstMin.value + *(float *) secondMin.value,
+                         firstNode->length + secondNode->length);
+
     firstNode->parent = newNode;
     secondNode->parent = newNode;
     newNode->left = firstNode;
@@ -142,15 +153,13 @@ HashMap *createCanonicalHuffmanTable(int size, CanonicalValue *initCanonicalArra
   qsort(initCanonicalArray, size, sizeof(CanonicalValue), sortByAlphabeticalValue);
 
   for (int i = 0; i < size; i++) {
-    if (!initCanonicalArray[i].character)
-      continue;
-
     char *currentKey = (char *) malloc(sizeof(char) * 2);
     char keyValue[2] = {(char) initCanonicalArray[i].character, '\0'};
     strcpy(currentKey, keyValue);
 
     int currentLength = initCanonicalArray[i].length;
     char *encodedStr = (char *) malloc(sizeof(char) * (currentLength + 1));
+    memset(encodedStr, 0, currentLength + 1);
 
     if (!i) {
       int2bin(0, currentLength, encodedStr);
@@ -159,15 +168,18 @@ HashMap *createCanonicalHuffmanTable(int size, CanonicalValue *initCanonicalArra
     }
 
     int previousLength = initCanonicalArray[i - 1].length;
-    char previusKey[2] = {(char) initCanonicalArray[i - 1].character, '\0'};
-    char *previousEncodedStr = (char *) table->get(table, previusKey);
+    char *previousKey = (char *) malloc(sizeof(char) * 2);
+    char previousStringToCpy[2] = {(char) initCanonicalArray[i - 1].character, '\0'};
+    strcpy(previousKey, previousStringToCpy);
+    char *previousEncodedStr = (char *) table->get(table, previousKey);
 
-    int newEncodedStr = bin2int(previousEncodedStr);
+    int newEncodedStr = !previousEncodedStr ? 0 : bin2int(previousEncodedStr);
     newEncodedStr = newEncodedStr + 0x1;
     newEncodedStr = currentLength > previousLength ? newEncodedStr << (currentLength - previousLength) : newEncodedStr;
     int2bin(newEncodedStr, currentLength, encodedStr);
 
     table->insert(table, currentKey, encodedStr);
+    free(previousKey);
   }
 
   return table;
@@ -175,15 +187,14 @@ HashMap *createCanonicalHuffmanTable(int size, CanonicalValue *initCanonicalArra
 
 HashMap *getHuffmanTable(Data *data) {
   Map *freqMap = createFreqMap(*data); // TODO: passare un puntatore a data
+  int numberOfCharacters = freqMap->size;
   Node *tree = createHuffmanTree(freqMap);
   char *rootKey = tree->value; // first value (root)
 
-  int numberOfCharacters = (int) strlen(rootKey);
   CanonicalValue initCanonicalArray[numberOfCharacters];
 
   for (int i = 0; i < numberOfCharacters; i++) {
-    char key[2] = {rootKey[i], '\0'};
-    char *encodedStr = getStrEncode(tree, key);
+    char *encodedStr = getStrEncode(tree, rootKey[i]);
 
     CanonicalValue *canonicalValue = (CanonicalValue *) malloc(sizeof(CanonicalValue));
     canonicalValue->character = (int) rootKey[i];
