@@ -12,7 +12,7 @@
 #include "../utils/bit_stream/bitOps.h"
 
 typedef struct {
-  int character;
+  uc character;
   int length;
 } CanonicalValue;
 

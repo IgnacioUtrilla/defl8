@@ -152,7 +152,7 @@ HashMap *createCanonicalHuffmanTable(int size, CanonicalValue *initCanonicalArra
 
   for (int i = 0; i < size; i++) {
     char *currentKey = (char *) malloc(sizeof(char) * 2);
-    char keyValue[2] = {(char) initCanonicalArray[i].character, '\0'};
+    char keyValue[2] = {initCanonicalArray[i].character, '\0'};
     strcpy(currentKey, keyValue);
 
     int currentLength = initCanonicalArray[i].length;
@@ -167,7 +167,7 @@ HashMap *createCanonicalHuffmanTable(int size, CanonicalValue *initCanonicalArra
 
     int previousLength = initCanonicalArray[i - 1].length;
     char *previousKey = (char *) malloc(sizeof(char) * 2);
-    char previousStringToCpy[2] = {(char) initCanonicalArray[i - 1].character, '\0'};
+    char previousStringToCpy[2] = {initCanonicalArray[i - 1].character, '\0'};
     strcpy(previousKey, previousStringToCpy);
     char *previousEncodedStr = (char *) table->get(table, previousKey);
 
@@ -195,7 +195,7 @@ HashMap *getHuffmanTable(Data *data) {
     char *encodedStr = getStrEncode(tree, rootKey[i]);
 
     CanonicalValue *canonicalValue = (CanonicalValue *) malloc(sizeof(CanonicalValue));
-    canonicalValue->character = (int) rootKey[i];
+    canonicalValue->character = (uc) rootKey[i];
     canonicalValue->length = (int) strlen(encodedStr);
 
     initCanonicalArray[i] = *canonicalValue;
