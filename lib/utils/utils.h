@@ -21,5 +21,5 @@ Node *createNode(void *value, float weight, int length);
 char *concat(char *str1, char *str2);
 void int2bin(unsigned int number, int number_of_bits, char *dest);
 int bin2int(char *str);
-char *concatCharArrays(char *str1, char *str2, int str1Lenght, int str2Length);
+char *concatCharArrays(char *str1, char *str2, int strLength, int str2Length);
 #endif

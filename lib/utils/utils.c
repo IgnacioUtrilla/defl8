@@ -19,12 +19,12 @@ char *concat(char *str1, char *str2) {
   return result;
 }
 
-char *concatCharArrays(char *str1, char *str2, int str1Lenght, int str2Length) {
-  int size = str1Lenght + str2Length;
+char *concatCharArrays(char *str1, char *str2, int strLength, int str2Length) {
+  int size = strLength + str2Length;
   char *result = (char *) malloc(size);
 
   for (int i = 0; i < size; ++i)
-    result[i] = i < str1Lenght ? str1[i] : str2[i - str1Lenght];
+    result[i] = i < strLength ? str1[i] : str2[i - strLength];
 
   return result;
 }
