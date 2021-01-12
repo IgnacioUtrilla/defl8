@@ -7,11 +7,6 @@ const unsigned int MAX_BLOCK_SIZE = 65536; // 64 KiB
  *  1. Eseguire in contemporanea SH e DH (ottimizzazione)
  *  2. Programmazione dinamica (memoize)?
  *
- * TODO
- *  1. fix: (gestire file piccolo)
- *  2. Rivedere nomenclatura variabili e funzioni
- *  3. Rinominare il main e aggiungere i suoi parametri
- *
  */
 
 /**
@@ -30,33 +25,37 @@ int main() {
 
   Data *data = (Data *) malloc(sizeof(Data));
   data->ptr = (char *) malloc(sizeof(char) * MAX_BLOCK_SIZE);
+  data->size = 0;
 
-  while (readBlock(MAX_BLOCK_SIZE, data->ptr) == ST_OK) {
-    data->size = strlen(data->ptr);
+  char *header = (char *) malloc(sizeof(char) * 4); // 3 bits + \0
+  int write_buffer = 0;
 
+  while (readBlock(MAX_BLOCK_SIZE, data) == ST_OK) {
+    write_buffer = 1;
     HashMap *dynamicHuffmanTable = getHuffmanTable(data);
 
     Map *staticCode = encoding(data, staticHuffmanTable);
     Map *dynamicCode = encoding(data, dynamicHuffmanTable);
 
-    Evaluate *evaluatedStaticCode = evaluate(staticCode, STATIC_HUFFMAN);
+    Evaluate *evaluatedStaticCode = staticCode ? evaluate(staticCode, STATIC_HUFFMAN) : NULL;
     Evaluate *evaluatedDynamicCode = evaluate(dynamicCode, DYNAMIC_HUFFMAN);
 
-    unsigned int staticCodeSize = evaluatedStaticCode->numOfBits;
+    unsigned int staticCodeSize = evaluatedStaticCode ? evaluatedStaticCode->numOfBits : NULL;
     unsigned int dynamicCodeSize = evaluatedDynamicCode->numOfBits;
     unsigned long dataDimensionNonCompressed = data->size * 8;
 
-    char *header = (char *) malloc(sizeof(char) * 4); // 3 bits + \0
     strcpy(header, isEOF() ? "1" : "0");
 
-    if (staticCodeSize < dynamicCodeSize && staticCodeSize < dataDimensionNonCompressed) {
+    if (staticCode && staticCodeSize < dynamicCodeSize && staticCodeSize < dataDimensionNonCompressed) {
       // save static code, header 001
       strcat(header, "01");
       writeCode(header, staticCode);
-    } else if (dynamicCodeSize < staticCodeSize && dynamicCodeSize < dataDimensionNonCompressed) {
+    } else if ((!staticCode || dynamicCodeSize < staticCodeSize) && dynamicCodeSize < dataDimensionNonCompressed) {
       // save dynamic code, header 010
       strcat(header, "10");
-      writeCode(header, staticCode);
+      writeStringOfBitsIntoFile(header);
+      writeCanonicalHuffman(evaluatedDynamicCode->maxIndexSize, dynamicHuffmanTable);
+      writeCode(NULL, dynamicCode);
     } else {
       // save non compressed block, header 000
       strcat(header, "00");
@@ -64,14 +63,16 @@ int main() {
       writeBlock(data);
 
       // end-of-non-compressed-block code
-      writeStringOfBitsIntoFile("00000000");
+      writeStringOfBitsIntoFile("100000000"); // FIXME: con un file png questa sequenza viene trovata per caso prima della fine
     }
 
     free(evaluatedStaticCode);
     free(evaluatedDynamicCode);
-    free(header);
   }
 
-  closeStream(READ);
-  closeStream(WRITE);
+  puts("Finish");
+
+  free(header);
+  closeStream(READ, NULL);
+  closeStream(WRITE, write_buffer);
 }
