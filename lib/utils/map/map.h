@@ -13,6 +13,7 @@ typedef struct map {
   int (*delete)(struct map *, char *);
   void *(*get)(struct map *, char *);
   Element *element;
+  Element *last;
 } Map;
 
 Map *createMap();
