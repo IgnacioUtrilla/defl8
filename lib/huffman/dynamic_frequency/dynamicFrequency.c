@@ -10,9 +10,9 @@
  */
 HashMap *countChar(Data buffer) {
   HashMap *list = createHashMap();
+  char *ptr = buffer.ptr;
   for (int i = 0; i < buffer.size; i++) {
     char c = buffer.ptr[i];
-    //check if char in hasMap
     char *temp = (char *) malloc(sizeof(char *) * 2);
     char new[2] = {c, '\0'};
     strcpy(temp, new);
