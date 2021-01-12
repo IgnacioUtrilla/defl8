@@ -15,9 +15,8 @@ typedef struct evaluate {
 
 typedef enum { DYNAMIC_HUFFMAN, STATIC_HUFFMAN } huffman_type;
 
+void writeCanonicalHuffman(unsigned int maxIndexSize, HashMap *huffman_table);
 void writeCode(char *header, Map *data);
 Evaluate *evaluate(Map *code, huffman_type type);
-void writeStringOfBitsIntoFile(char *data);
-void writeBlock(Data *data);
 
 #endif

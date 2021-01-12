@@ -1,5 +1,35 @@
 #include "utils.h"
 
+int getIndexBySearchingInDictionary(Data **source, Data *where) {
+  for (int i = 0; i < 256; ++i) {
+    Data *p_data = source[i];
+
+    if (i != 0 && p_data == NULL) return -1;
+
+    if (p_data != NULL && p_data->size == where->size) {
+      for (int j = 0; j < p_data->size; j++) {
+        if ((uc) p_data->ptr[j] != (uc) where->ptr[j]) break;
+        if (j == p_data->size - 1) return i;
+      }
+    }
+  }
+
+  return -1;
+}
+
+/**
+ * Free memory from a dictionary entry
+ *
+ * @param {Pointer to array of Data} dictionary
+ * @param {int} index
+ */
+void freeDictionaryEntry(Data *const *dictionary, int index) {
+  if (dictionary[index] != NULL) {
+    free(dictionary[index]->ptr);
+    free(dictionary[index]);
+  }
+}
+
 /**
  * LZ78 Algorithm
  *
@@ -8,33 +38,55 @@
  * @return {Map pointer} (malloc created with constructor) - code generated
  */
 Map *encoding(Data *data, HashMap *huffmanTable) {
-  char *P = NULL;
-  HashMap *dictionary = createHashMap();
   Map *code = createMap();
+  Data *dictionary[256] = {0};
+  int index = 1;
 
-  for (int index = 0; index < data->size; index++) {
-    int C = (uc) data->ptr[index];
-    char strC[2] = {C, '\0'};
-    char *PC = concat(P == NULL ? "" : P, strC); // FIXME: eseguire il free della memoria
+  Data *strC = (Data *) malloc(sizeof(Data));
+  strC->ptr = (char *) malloc(sizeof(char));
 
-    if (dictionary->get(dictionary, PC) != 0) {
-      P = (char *) PC;
+  Data *P = (Data *) malloc(sizeof(Data));
+  P->ptr = NULL;
+  P->size = 0;
+
+  for (int i = 0; i < data->size; i++) {
+    strC->ptr[0] = data->ptr[i];
+    strC->size = 1;
+
+    Data *PC = (Data *) malloc(sizeof(Data));
+    PC->ptr = concatCharArrays(P->ptr, strC->ptr, P->size, strC->size); // FIXME: eseguire il free della memoria
+    PC->size = P->size + strC->size;
+
+    if (getIndexBySearchingInDictionary(dictionary, PC) != -1) {
+      P->ptr = (char *) PC->ptr;
+      P->size = PC->size;
     } else {
-      void *encodedStr = huffmanTable->get(huffmanTable, strC);
-      int pIndex = P == NULL ? 0 : *(int *) dictionary->get(dictionary, P);
+      char *encodedStr = (char *) huffmanTable->get(huffmanTable, strC->ptr);
+
+      // When the static huffman table doesn't contain the character
+      if (!encodedStr)return NULL;
+
+      int pIndex = P->ptr == NULL ? 0 : getIndexBySearchingInDictionary(dictionary, P);
       code->insert(code, pIndex, encodedStr);
 
-      int *newIndex = (int *) malloc(sizeof(int)); // FIXME: eseguire il free della memoria
-      *newIndex = dictionary->size + 1;
-      dictionary->insert(dictionary, PC, newIndex);
+      Data *new_value = (Data *) malloc(sizeof(Data));
+      new_value->ptr = PC->ptr;
+      new_value->size = PC->size;
 
-      P = NULL;
+      // Free memory before replace a dictionary value if exists
+      freeDictionaryEntry(dictionary, index);
+
+      dictionary[index] = new_value;
+      index = index < 255 ? index + 1 : 1;
+
+      P->ptr = NULL;
+      P->size = 0;
     }
   }
 
   // TODO: duplicated code
-  if (P != NULL) {
-    int pIndex = *(int *) dictionary->get(dictionary, P);
+  if (P->ptr != NULL) {
+    int pIndex = getIndexBySearchingInDictionary(dictionary, P);
     code->insert(code, pIndex, NULL);
   }
 
@@ -57,7 +109,7 @@ Evaluate *evaluate(Map *code, huffman_type type) {
     unsigned int index = element->key;
     char *encodedString = element->value;
 
-    unsigned int indexSize = index < 16 ? 4 : index < 256 ? 8 : 12;
+    unsigned int indexSize = index < 16 ? 4 : 8;
     maxIndexSize = maxIndexSize < indexSize ? indexSize : maxIndexSize;
 
     numOfBits += indexSize;
@@ -65,34 +117,12 @@ Evaluate *evaluate(Map *code, huffman_type type) {
   } while ((element = element->next) != NULL);
 
   if (type == DYNAMIC_HUFFMAN) {
-    numOfBits += 8 + maxIndexSize * 256; // length size byte + 256 chars * max length
+    numOfBits += 4 + maxIndexSize * 256; // length size byte + 256 chars * max length
   }
 
   eval->numOfBits = numOfBits;
   eval->maxIndexSize = maxIndexSize;
   return eval;
-}
-
-/**
- * Function to convert an int to a binary string of n bits
- *
- * @param {Integer} number - number to convert
- * @param {Integer} number_of_bits
- * @param {Char pointer (string)} dest - where to save
- */
-void int2bin(unsigned int number, int number_of_bits, char *dest) {
-  char *inverseBinaryNumber = (char *) malloc(number_of_bits + 1);
-  for (unsigned int i = 0; i < number_of_bits; i++) {
-    unsigned int temp = number >> i;
-    strcat(inverseBinaryNumber, (temp & 1) ? "1" : "0");
-  }
-
-  for (int i = number_of_bits - 1; i >= 0; i--) {
-    char str[2] = {inverseBinaryNumber[i], '\0'};
-    strcat(dest, str);
-  }
-
-  free(inverseBinaryNumber);
 }
 
 /**
@@ -102,16 +132,14 @@ void int2bin(unsigned int number, int number_of_bits, char *dest) {
  * @return {Char pointer} (malloc) - number of bits + binary number
  */
 char *getStringOfBitsForIndex(unsigned int index) {
-  int indexSize = index < 16 ? 4 : index < 256 ? 8 : 12;
+  int indexSize = index < 16 ? 4 : 8;
   char *res = (char *) malloc(indexSize + 3); // +3 = '\0' + 2 bits of index size
   strcpy(res, "");
 
   switch (indexSize) {
-    case 4:strcat(res, "00");
+    case 4:strcat(res, "10");
       break;
     case 8:strcat(res, "01");
-      break;
-    case 12:strcat(res, "10");
       break;
     default:break;
   }
@@ -121,13 +149,38 @@ char *getStringOfBitsForIndex(unsigned int index) {
 }
 
 /**
+ * Write into the output file the canonical huffman table
+ *
+ * @param {Map pointer} data
+ * @param {Hashmap pointer} huffman_table
+ */
+void writeCanonicalHuffman(unsigned int maxIndexSize, HashMap *huffman_table) {
+  char lengthSize[9];
+  int2bin(maxIndexSize, 4, lengthSize);
+  writeStringOfBitsIntoFile(lengthSize);
+
+  // 0..255 ASCII CODES
+  for (int i = 0; i < 256; i++) {
+    char c[2] = {(char) i, '\0'};
+    char *encoded = huffman_table->get(huffman_table, c);
+
+    char *res = (char *) malloc(sizeof(char) * (maxIndexSize + 1));
+    strcpy(res, "");
+    int2bin(encoded ? strlen(encoded) : 0, maxIndexSize, res);
+    writeStringOfBitsIntoFile(res);
+    free(res);
+  }
+}
+
+/**
  * Write LZ78 code result into the output file
  *
  * @param {Char pointer} header - block header
  * @param {Map pointer} data - LZ78 result
  */
 void writeCode(char *header, Map *data) {
-  writeStringOfBitsIntoFile(header);
+  if (header)
+    writeStringOfBitsIntoFile(header);
 
   Element *code = data->element;
   while (code != NULL) {
