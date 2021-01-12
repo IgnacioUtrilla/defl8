@@ -4,10 +4,6 @@
 #include "hashMap.h"
 
 /**
- * hmNode struct definition
- */
-
-/**
  *
  * Hash function to getHashMapValue an index
  *
@@ -48,10 +44,10 @@ void *getHashMapValue(HashMap *hashmap, char *key) {
   int index = hash(key);
   do {
     hmNode *node = hashmap->array[index];
+    if (node != NULL && node->key == NULL && key == NULL)
+      return node->value;
 
-    if (node == NULL) return 0;
-
-    if (!strcmp(node->key, key))
+    if (node != NULL && node->key != NULL && !strcmp(node->key, key))
       return node->value;
 
     index++;
@@ -95,7 +91,7 @@ int deleteHashMapValue(HashMap *hashmap, char *key) {
  * @param {Generic pointer} value
  */
 int insertHashMapValue(HashMap *hashmap, char *key, void *value) {
-  if (hashmap->size == MAX_HASHMAP_SIZE - 1) {
+  if (hashmap->size == MAX_HASHMAP_SIZE) {
     // TODO gestire errore
     return 1;
   }
@@ -126,6 +122,12 @@ int insertHashMapValue(HashMap *hashmap, char *key, void *value) {
   return 1;
 };
 
+void clearArray(struct hmnode *array[]) {
+  for (int i = 0; i < MAX_HASHMAP_SIZE_X2; i++) {
+    array[i] = NULL;
+  }
+}
+
 /**
  * Hashmap "constructor"
  *
@@ -137,6 +139,7 @@ HashMap *createHashMap() {
   hashmap->insert = &insertHashMapValue;
   hashmap->delete = &deleteHashMapValue;
   hashmap->get = &getHashMapValue;
+  clearArray(hashmap->array);
 
   return hashmap;
 }
