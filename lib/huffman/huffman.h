@@ -19,5 +19,6 @@ typedef struct {
 char *getStrEncode(Node *root, char c);
 Node *createHuffmanTree(Map *freqMap);
 HashMap *getHuffmanTable(Data *data);
+HashMap *createCanonicalHuffmanTable(int size, CanonicalValue *initCanonicalArray);
 
 #endif
