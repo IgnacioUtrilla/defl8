@@ -11,7 +11,7 @@ typedef enum { READ, WRITE } stream_mode;
 stream_status openStream(char *filename, stream_mode mode);
 
 // close a bit stream 
-stream_status closeStream(stream_mode mode);
+stream_status closeStream(stream_mode mode, int write_buffer);
 
 // read one bit from stream
 stream_status readBit(uc *bit);
@@ -23,6 +23,8 @@ stream_status readBlock(size_t size, Data *data);
 
 int isEOF();
 
-int isEOF();
+void writeBlock(Data *data);
+
+void writeStringOfBitsIntoFile(char *data);
 
 #endif

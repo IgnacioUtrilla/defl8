@@ -101,35 +101,8 @@ void writeBlock(Data *data) {
   free(str);
 }
 
-/**
- * Write the binary string into the output file
- *
- * @param {Char pointer} data - binary string
- */
-void writeStringOfBitsIntoFile(char *data) {
-  for (unsigned int i = 0; i < strlen(data); i++) {
-    uc bit = data[i] - '0';
-    writeBit(bit);
-  }
-}
-
-/**
- * Write a block of data
- *
- * @param {Data pointer} data
- */
-void writeBlock(Data *data) {
-  char *str = (char *) malloc(sizeof(char) * 9);
-  for (unsigned int i = 0; i < data->size; i++) {
-    strcpy(str, "");
-    int2bin((unsigned int) data->ptr[i], 8, str);
-    writeStringOfBitsIntoFile(str);
-  }
-  free(str);
-}
-
 // close a bit stream
-stream_status closeStream(stream_mode mode) {
+stream_status closeStream(stream_mode mode, int write_buffer) {
   if (mode == READ) {
     if (status_in != ST_OPEN) {
       printf("Error input stream not open\n");
@@ -147,7 +120,9 @@ stream_status closeStream(stream_mode mode) {
       return ST_ERROR;
     }
 
-    fputc(buf_out, fout);
+    if (write_buffer)
+      fputc(buf_out, fout);
+
     fclose(fout);
     status_out = ST_CLOSED;
     return status_out;
