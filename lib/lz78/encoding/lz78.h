@@ -7,7 +7,6 @@
 #include "../../utils/bit_stream/bitStream.h"
 #include "../../huffman/huffman.h"
 
-// TODO rivedere nome
-Map *encoding(Data *data, HashMap *huffmanTable);
+int encoding(char *input, char *output);
 
 #endif

@@ -15,9 +15,7 @@ const unsigned int MAX_BLOCK_SIZE = 65536; // 64 KiB
  * @param {Char pointer} fin - input file directory
  * @param {Char pointer} fout - output file directory
  */
-int main() {
-  char *input = "../lib/lz78/encoding/test_files/test1/input.txt";
-  char *output = "../lib/lz78/encoding/test_files/test1/output.txt";
+int encoding(char *input, char *output) {
   HashMap *staticHuffmanTable = getHuffmanStaticTable();
 
   openStream(input, READ);
@@ -34,8 +32,8 @@ int main() {
     write_buffer = 1;
     HashMap *dynamicHuffmanTable = getHuffmanTable(data);
 
-    Map *staticCode = encoding(data, staticHuffmanTable);
-    Map *dynamicCode = encoding(data, dynamicHuffmanTable);
+    Map *staticCode = LZ78Encoding(data, staticHuffmanTable);
+    Map *dynamicCode = LZ78Encoding(data, dynamicHuffmanTable);
 
     Evaluate *evaluatedStaticCode = staticCode ? evaluate(staticCode, STATIC_HUFFMAN) : NULL;
     Evaluate *evaluatedDynamicCode = evaluate(dynamicCode, DYNAMIC_HUFFMAN);

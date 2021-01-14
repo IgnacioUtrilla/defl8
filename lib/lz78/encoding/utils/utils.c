@@ -48,7 +48,7 @@ void freeDictionaryEntry(Data *const *dictionary, int index) {
  * @param {Hashmap pointer} huffmanTable
  * @return {Map pointer} (malloc created with constructor) - code generated
  */
-Map *encoding(Data *data, HashMap *huffmanTable) {
+Map *LZ78Encoding(Data *data, HashMap *huffmanTable) {
   Map *code = createMap();
   Data *dictionary[256] = {0};
   int index = 1;
