@@ -15,9 +15,9 @@
  */
 
 Test(MAP, CREATE) {
-  Map map = createMap();
-  cr_expect_eq(map.size, 0, "DEFAULT DIMENSION AFTER CREATION");
-  cr_expect_eq(map.element, NULL, "ELEMENT EQ. NULL");
+  Map *map = createMap();
+  cr_expect_eq(map->size, 0, "DEFAULT DIMENSION AFTER CREATION");
+  cr_expect_eq(map->element, NULL, "ELEMENT EQ. NULL");
 }
 
 /*
@@ -30,9 +30,9 @@ TheoryDataPoints(MAP, INSERT) = {
 };
 
 Theory((char *key, float value), MAP, INSERT) {
-  Map map = createMap();
-  map.insert(&map, key, value);
-  cr_expect_eq(map.size, 1, "DIMENSION INCREMENT AFTER ADD AN ELEMENT");
+  Map *map = createMap();
+  map->insert(map, key, &value);
+  cr_expect_eq(map->size, 1, "DIMENSION INCREMENT AFTER ADD AN ELEMENT");
 }
 
 /*
@@ -45,14 +45,14 @@ TheoryDataPoints(MAP, GET) = {
 };
 
 Theory((char *key, float value), MAP, GET) {
-  Map map = createMap();
-  map.insert(&map, key, value);
-  cr_expect_eq(map.get(&map, key), value, "GET EXISTENT VALUE");
+  Map *map = createMap();
+  map->insert(map, key, &value);
+  cr_expect_eq(*(float *) map->get(map, key), value, "GET EXISTENT VALUE");
 }
 
 Test(MAP, GET_WITH_NULL_KEY) {
-  Map map = createMap();
-  cr_expect_eq(map.get(&map, NULL), 0);
+  Map *map = createMap();
+  cr_expect_eq(map->get(map, NULL), 0);
 }
 
 /*
@@ -60,8 +60,11 @@ Test(MAP, GET_WITH_NULL_KEY) {
  */
 
 Test(MAP, DELETE) {
-  Map map = createMap();
-  map.insert(&map, "test", 123);
-  map.delete(&map, "test");
-  cr_expect_eq(map.size, 0);
+  Map *map = createMap();
+  int *value = (int *) malloc(sizeof(int));
+  *value = 123;
+
+  map->insert(map, "test", &value);
+  map->delete(map, "test");
+  cr_expect_eq(map->size, 0);
 }
