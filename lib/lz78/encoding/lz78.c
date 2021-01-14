@@ -59,11 +59,7 @@ int main() {
     } else {
       // save non compressed block, header 000
       strcat(header, "00");
-      writeStringOfBitsIntoFile(header);
-      writeBlock(data);
-
-      // end-of-non-compressed-block code
-      writeStringOfBitsIntoFile("100000000"); // FIXME: con un file png questa sequenza viene trovata per caso prima della fine
+      writeNotCompressedBlock(header, data);
     }
 
     free(evaluatedStaticCode);
@@ -73,6 +69,7 @@ int main() {
   puts("Finish");
 
   free(header);
+
   closeStream(READ, NULL);
   closeStream(WRITE, write_buffer);
 }

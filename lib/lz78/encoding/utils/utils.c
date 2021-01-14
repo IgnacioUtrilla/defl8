@@ -1,5 +1,16 @@
 #include "utils.h"
 
+/**
+ * LZ78
+ * Search Data value inside an array of Data pointer and return the index
+ *
+ * This logic handle data like an array of chars and not like a string
+ * because the null char could be present
+ *
+ * @param {Array of Data pointers} source
+ * @param {Data pointer} where - information to search
+ * @return {int index}
+ */
 int getIndexBySearchingInDictionary(Data **source, Data *where) {
   for (int i = 0; i < 256; ++i) {
     Data *p_data = source[i];
@@ -203,4 +214,22 @@ void writeCode(char *header, Map *data) {
 
   // end-of-compressed-block code
   writeStringOfBitsIntoFile("11");
+}
+
+/**
+ * Write not compressed block in the output file
+ *
+ * @param {Char pointer} header
+ * @param {Data pointer} data
+ */
+void writeNotCompressedBlock(char *header, Data *data) {
+  char *length = (char *) malloc(sizeof(char) * 18); // 17 bit for 65536 + null char
+  memset(length, 0, 18);
+  int2bin(data->size, 17, length);
+
+  writeStringOfBitsIntoFile(header);
+  writeStringOfBitsIntoFile(length);
+  writeBlock(data);
+
+  free(length);
 }
