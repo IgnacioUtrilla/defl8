@@ -8,7 +8,7 @@ void printTitle() {
   printf("██║  ██║██╔══╝  ██╔══╝  ██║     ██╔══██╗\n");
   printf("██████╔╝███████╗██║     ███████╗╚█████╔╝\n");
   printf("╚═════╝ ╚══════╝╚═╝     ╚══════╝ ╚════╝\n");
-  printf("by RB & IUM v1.0\n");
+  printf("by RB & IUM v1.0.2\n");
 }
 
 void printCompressionRatio(char *before, char *after) {
@@ -21,12 +21,11 @@ void printCompressionRatio(char *before, char *after) {
   // calculating the size of the file
   long beforeSize = ftell(fpBef);
   long afterSize = ftell(fpAft);
+  float ratio = beforeSize ? ((float) (beforeSize - afterSize) / beforeSize) * 100 : 0;
 
-  float ratio = ((float) (beforeSize - afterSize) / beforeSize) * 100;
   // closing the file
   fclose(fpBef);
   fclose(fpAft);
 
-  printf("\nadding: %s (compression ratio: %.0f%%)\n", after, ratio);
-
+  printf("\nadding: %s (compression ratio: %.2f%%)\n", after, ratio);
 }
