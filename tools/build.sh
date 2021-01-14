@@ -16,4 +16,4 @@ LIBS="
   lib/lz78/encoding/utils/utils.c
 "
 
-gcc -o "def8" $LIBS -lm
+gcc -o "def8" $LIBS -lm 2>/dev/null
