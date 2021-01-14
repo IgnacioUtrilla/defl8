@@ -19,7 +19,12 @@ stream_status readBit(uc *bit);
 // write one bit to stream
 stream_status writeBit(uc bit);
 
+char *defineEncodeString(uc *bit, int dim);
+
+int isNextEnd(uc *bit, int size, char *equal);
 stream_status readBlock(size_t size, Data *data);
+
+void writeBlock(Data *data);
 
 int isEOF();
 

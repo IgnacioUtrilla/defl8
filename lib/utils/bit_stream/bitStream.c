@@ -167,3 +167,32 @@ stream_status writeBit(uc bit) {
 
   return ST_OK;
 }
+
+int isNextEnd(uc *bit, int size, char *equal) {
+  char in_cnt_back = in_cnt;
+  uc buf_in_back = buf_in;
+  fpos_t pos;
+  fgetpos(fin, &pos);
+  char *nextByte = defineEncodeString(bit, size);
+  if (!strcmp(nextByte, equal)) {
+    return 1;
+  } else {
+    in_cnt = in_cnt_back;
+    buf_in = buf_in_back;
+    fsetpos(fin, &pos);
+    return 0;
+  }
+}
+
+char *defineEncodeString(uc *bit, int dim) {
+  char *encode = "";
+  for (int i = 0; i < dim; i++) {
+    readBit(bit);
+    if (bitStatus(bit, 0)) {
+      encode = concat(encode, "1");
+    } else {
+      encode = concat(encode, "0");
+    }
+  }
+  return encode;
+}
