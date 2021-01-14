@@ -1,4 +1,5 @@
 #include "criterion/criterion.h"
+#include "dynamic_frequency/dynamicFrequency.c"
 #include "static_frequency/staticFrequency.c"
 #include "../utils/utils.c"
 #include "../utils/hash_map/hashMap.c"

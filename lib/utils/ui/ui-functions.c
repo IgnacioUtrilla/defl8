@@ -8,7 +8,7 @@ void printTitle() {
   printf("██║  ██║██╔══╝  ██╔══╝  ██║     ██╔══██╗\n");
   printf("██████╔╝███████╗██║     ███████╗╚█████╔╝\n");
   printf("╚═════╝ ╚══════╝╚═╝     ╚══════╝ ╚════╝\n");
-  printf("by RB & IUM v1.0.2\n");
+  printf("by RB & IUM v1.0.5\n");
 }
 
 void printCompressionRatio(char *before, char *after) {
