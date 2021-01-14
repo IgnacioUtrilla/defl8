@@ -18,6 +18,7 @@ typedef struct hashmap {
 } HashMap;
 
 HashMap *createHashMap();
+void removeHashMap(HashMap *hashmap);
 void *getHashMapValue(struct hashmap *, char *key);
 int deleteHashMapValue(struct hashmap *, char *key);
 int insertHashMapValue(struct hashmap *, char *key, void *value);

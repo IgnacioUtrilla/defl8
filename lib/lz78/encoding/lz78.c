@@ -64,11 +64,14 @@ int main() {
 
     free(evaluatedStaticCode);
     free(evaluatedDynamicCode);
+
+    removeHashMap(dynamicHuffmanTable);
+    free(dynamicCode); // contiene puntatori alla tabella dinamica di huffman
+    free(staticCode); // contiene puntatori alla tabella statica di huffman
   }
 
-  puts("Finish");
-
   free(header);
+  free(data);
 
   closeStream(READ, NULL);
   closeStream(WRITE, write_buffer);

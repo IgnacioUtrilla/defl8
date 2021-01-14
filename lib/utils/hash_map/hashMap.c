@@ -143,3 +143,16 @@ HashMap *createHashMap() {
 
   return hashmap;
 }
+
+/**
+ * Hashmap "destructor"
+ *
+ * @param {Hashmap struct} hashmap
+ */
+void removeHashMap(HashMap *hashmap) {
+  for (int i = 0; i < MAX_HASHMAP_SIZE_X2; ++i)
+    if (hashmap->array[i] != NULL)
+      free(hashmap->array[i]);
+
+  free(hashmap);
+}

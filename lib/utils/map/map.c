@@ -117,7 +117,11 @@ Element findMin(Map *map, Element (*getValue)(void *)) {
     return getValue(map);
   }
 }
-
+/**
+ * Map "constructor"
+ *
+ * @return {Map struct} hashmap
+ */
 Map *createMap() {
   Map *map = (Map *) malloc(sizeof(Map));
   map->size = 0;
@@ -130,4 +134,18 @@ Map *createMap() {
   return map;
 }
 
-// TODO: create destructor
+/**
+ * Map "destructor"
+ *
+ * @param {Map struct} hashmap
+ */
+void removeMap(Map *map) {
+  Element *element = map->element;
+  while (element) {
+    Element *next = element->next;
+    free(element);
+    element = next;
+  }
+
+  free(map);
+}

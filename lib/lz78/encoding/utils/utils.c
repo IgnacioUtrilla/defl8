@@ -95,7 +95,6 @@ Map *encoding(Data *data, HashMap *huffmanTable) {
     }
   }
 
-  // TODO: duplicated code
   if (P->ptr != NULL) {
     int pIndex = getIndexBySearchingInDictionary(dictionary, P);
     code->insert(code, pIndex, NULL);

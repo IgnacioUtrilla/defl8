@@ -17,6 +17,7 @@ typedef struct map {
 } Map;
 
 Map *createMap();
+void removeMap(Map *map);
 void insertMapValue(Map *map, char *key, void *value);
 int deleteMapValue(Map *map, char *key);
 void *getMapValue(Map *map, char *key);
