@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include <string.h>
 #include "bitStream.h"
 
 FILE *fin;
@@ -101,8 +101,8 @@ void writeBlock(Data *data) {
   free(str);
 }
 
-// close a bit stream 
-stream_status closeStream(stream_mode mode) {
+// close a bit stream
+stream_status closeStream(stream_mode mode, int write_buffer) {
   if (mode == READ) {
     if (status_in != ST_OPEN) {
       printf("Error input stream not open\n");
@@ -119,6 +119,10 @@ stream_status closeStream(stream_mode mode) {
       status_out = ST_ERROR;
       return ST_ERROR;
     }
+
+    if (write_buffer)
+      fputc(buf_out, fout);
+
     fclose(fout);
     status_out = ST_CLOSED;
     return status_out;

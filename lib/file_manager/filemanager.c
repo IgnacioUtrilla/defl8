@@ -48,20 +48,18 @@ Data readFile(char *filename) {
 
 /**
  *
- * TODO
- *  Salvare i dati a blocchi e non tutto assieme?
+ * Salvataggio dei dati all'interno di un file (modilità: append)
  *
  * @param {Pointer} data
  * @param {String} filename
  * @return {number} - 0 = no errors
  */
-int saveFile(Data data, char *filename) {
-  FILE *file;
-  file = fopen(filename, "w");
+int saveFile(Data *data, char *filename) {
+  FILE *file = fopen(filename, "ab+");
 
   if (!file) perror("Error: On opening file");
 
-  fwrite(data.ptr, sizeof(char), data.size, file);
+  fwrite(data->ptr, sizeof(char), data->size, file);
   fclose(file);
   return 0;
 }

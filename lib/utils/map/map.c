@@ -20,18 +20,16 @@ void insertMapValue(Map *map, char *key, void *value) {
   newNode->value = value;
   newNode->next = NULL;
 
-  Element *lastElement = map->element;
   map->size++;
 
-  if (!lastElement) {
+  if (!map->element) {
     map->element = newNode;
+    map->last = newNode;
     return;
   }
 
-  while (lastElement->next != NULL)
-    lastElement = lastElement->next;
-
-  lastElement->next = newNode;
+  map->last->next = newNode;
+  map->last = newNode;
 }
 
 void *getMapValue(Map *map, char *key) {
@@ -67,6 +65,9 @@ int deleteMapValue(Map *map, char *key) {
   }
 
   if (!strcmp(element->key, key)) {
+    if (element == map->last)
+      map->last = previousElement;
+
     if (previousElement->next == element->next) {
       previousElement = element->next;
     } else {
@@ -116,14 +117,35 @@ Element findMin(Map *map, Element (*getValue)(void *)) {
     return getValue(map);
   }
 }
-
+/**
+ * Map "constructor"
+ *
+ * @return {Map struct} hashmap
+ */
 Map *createMap() {
   Map *map = (Map *) malloc(sizeof(Map));
   map->size = 0;
   map->element = NULL;
+  map->last = NULL;
   map->insert = &insertMapValue;
   map->delete = &deleteMapValue;
   map->get = &getMapValue;
 
   return map;
+}
+
+/**
+ * Map "destructor"
+ *
+ * @param {Map struct} hashmap
+ */
+void removeMap(Map *map) {
+  Element *element = map->element;
+  while (element) {
+    Element *next = element->next;
+    free(element);
+    element = next;
+  }
+
+  free(map);
 }

@@ -9,7 +9,7 @@ void setValue(Map *map, char *key, float value) {
 }
 
 /**
- * Restituisce la tabella statica di Huffman (inglese)
+ * Restituisce le frequenze per la costruzione della tabella statica di Huffman (inglese)
  *
  * @link https://en.wikipedia.org/wiki/Letter_frequency
  * @return { Map } primo elemento della tabella statica
@@ -75,5 +75,6 @@ HashMap *getHuffmanStaticTable() {
       staticTable->insert(staticTable, key, encodedStr);
     }
   }
+
   return staticTable;
 }
