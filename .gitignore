@@ -290,3 +290,5 @@ local.properties
 # Ignore all local history of files
 .history
 # End of https://www.toptal.com/developers/gitignore/api/c,eclipse,visualstudiocode,clion,clion+all,clion+iml,intellij+all
+
+criterion_test
