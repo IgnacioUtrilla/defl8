@@ -192,6 +192,6 @@ void decoding(char *fileName, char *outputFile) {
     if (isLast) break;
   }
 
-  closeStream(WRITE);
-  closeStream(READ);
+  closeStream(WRITE, NULL);
+  closeStream(READ, NULL);
 }

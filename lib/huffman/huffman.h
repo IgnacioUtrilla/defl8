@@ -1,7 +1,6 @@
 #ifndef __HUFFMAN__
 #define __HUFFMAN__
 
-#include "dynamic_frequency/dynamicFrequency.h"
 #include <stdlib.h>
 #include <string.h>
 #include "dynamic_frequency/dynamicFrequency.h"
