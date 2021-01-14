@@ -9,7 +9,7 @@
 
 typedef enum { NOT, FIXED, DYNAMIC, ERROR } encodeType;
 
-void lz78Decoding(char *fileName, char *outputFile);
+void decoding(char *fileName, char *outputFile);
 void addDictionaryEntry(Data **dictionaryEntry,
                         char *oldChar,
                         char *newChar,

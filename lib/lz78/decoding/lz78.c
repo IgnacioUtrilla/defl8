@@ -109,28 +109,29 @@ int decodeLZ78(uc *bit, HashMap *hash_map, int maxSizeEncode) {
 }
 
 int notBlock(uc *bit, int *indexLength) {
-  while (1)
-    if (isNextEnd(bit, 9, "100000000")) {
-      (*indexLength) = 0;
-      return *indexLength;
-    } else {
-      char *newChar = defineEncodeString(bit, 8);
-      char c = (char) bin2int(newChar);
-      char *writeC = (char *) malloc(sizeof(char) * 2);
-      writeC[0] = c;
-      writeC[1] = '\0';
+  char *totalBytesCode = defineEncodeString(bit, 17);
+  unsigned int totalBytes = bin2int(totalBytesCode);
+  for (int i = 0; i < totalBytes; i++) {
 
-      Data *writeData = (Data *) malloc(sizeof(Data));
-      writeData->ptr = writeC;
-      writeData->size = 1;
-      writeBlock(writeData);
+    char *newChar = defineEncodeString(bit, 8);
+    char c = (char) bin2int(newChar);
+    char *writeC = (char *) malloc(sizeof(char) * 2);
+    writeC[0] = c;
+    writeC[1] = '\0';
 
-      free(writeData);
-      free(writeC);
-    }
+    Data *writeData = (Data *) malloc(sizeof(Data));
+    writeData->ptr = writeC;
+    writeData->size = 1;
+    writeBlock(writeData);
+
+    free(writeData);
+    free(writeC);
+  }
+  (*indexLength) = 0;
+  return *indexLength;
 }
 
-void lz78Decoding(char *fileName, char *outputFile) {
+void decoding(char *fileName, char *outputFile) {
   openStream(outputFile, WRITE);
   openStream(fileName, READ);
 
@@ -193,11 +194,4 @@ void lz78Decoding(char *fileName, char *outputFile) {
 
   closeStream(WRITE);
   closeStream(READ);
-}
-
-int main() {
-  char *fileName = "../lib/lz78/decoding/testFile/input.def8";
-  char *fileOut = "../lib/lz78/decoding/testFile/immagine.png";
-  lz78Decoding(fileName, fileOut);
-  return 0;
 }
