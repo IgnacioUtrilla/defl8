@@ -2,7 +2,7 @@
 
 Defl8 is a DEFLATE-based compression and decompression that use Huffman and LZ78.
 
-## Compile (recommended Linux environment)
+## Compile (only Linux environment)
 
 ```bash
 cd defl8
