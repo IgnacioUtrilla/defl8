@@ -11,13 +11,13 @@
 #include "../utils/bit_stream/bitOps.h"
 
 typedef struct {
-  uc character;
+  int character;
   int length;
 } CanonicalValue;
 
 char *getStrEncode(Node *root, char c);
 Node *createHuffmanTree(Map *freqMap);
 HashMap *getHuffmanTable(Data *data);
-HashMap *createCanonicalHuffmanTable(int size, CanonicalValue *initCanonicalArray);
+HashMap *createCanonicalHuffmanTable(int size, CanonicalValue **initCanonicalArray);
 
 #endif
