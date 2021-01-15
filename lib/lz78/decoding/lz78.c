@@ -153,7 +153,7 @@ void decoding(char *fileName, char *outputFile) {
       case FIXED:indexLength = decodeLZ78(&bit, hash_map_fix, 9);
         break;
       case DYNAMIC: {
-        CanonicalValue canonicalLength[256] = {0};
+        CanonicalValue *canonicalLength[256] = {0};
         length = defineEncodeString(&bit, 4);
         indexLength = bin2int(length);
 
@@ -165,17 +165,17 @@ void decoding(char *fileName, char *outputFile) {
           CanonicalValue *canonicalValue = (CanonicalValue *) malloc(sizeof(CanonicalValue));
           canonicalValue->character = i;
           canonicalValue->length = length_int;
-          canonicalLength[i] = *canonicalValue;
+          canonicalLength[i] = canonicalValue;
 
           if (length_int) count++;
         }
 
-        CanonicalValue canonicalLengthFiltered[count];
+        CanonicalValue *canonicalLengthFiltered[count];
         int maxSizeEncode = count = 0;
         for (int i = 0; i < 256; i++) {
-          if (canonicalLength[i].length) {
+          if (canonicalLength[i]->length) {
             canonicalLengthFiltered[count] = canonicalLength[i];
-            maxSizeEncode = maxSizeEncode < canonicalLength[i].length ? canonicalLength[i].length : maxSizeEncode;
+            maxSizeEncode = maxSizeEncode < canonicalLength[i]->length ? canonicalLength[i]->length : maxSizeEncode;
             count++;
           }
         }
